@@ -1,0 +1,47 @@
+{
+	"name": "minify",
+	"displayName": "minify",
+	"description": "Minify for VS Code.\nMinify with command, and (optionally) re-minify on save.",
+	"version": "0.0.1",
+	"publisher": "HookyQR",
+	"engines": {
+		"vscode": "^0.10.1"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "HookyQR.minify",
+				"title": "Minify"
+			}
+		],
+	"configuration":{
+		"type": "object",
+		"title": "Minify config",
+		"properties":{
+			"minify.minifyExistingOnSave":{
+		"type":"boolean",
+		"default":false,
+		"description":"Minify file on save if a related (.min.[ext]) file already exists"}
+		}
+	}
+	},
+	"devDependencies": {
+		"vscode": "0.10.x"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"minify": "^2.0.2"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/HookyQR/VSCodeMinify"
+	}
+	
+}
