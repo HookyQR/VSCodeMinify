@@ -5,6 +5,7 @@ var fs = require('fs');
 
 //need to register the onSave function here
 
+
 //register on activation
 function activate(context) {
     var doMinify = function(doc) {
@@ -15,7 +16,7 @@ function activate(context) {
 
         if (type === 'htm' || type === 'html') run = 'html';
         else if (type === 'css') run = 'css';
-        else if (type === 'js' || type === 'json') run = 'js';
+        else if (type === 'js') run = 'js';
         else return;
         vscode.window.setStatusBarMessage("Starting minify", 5000);
         minify[run](better, (e, d) => {
@@ -29,7 +30,7 @@ function activate(context) {
                     return vscode.window.setStatusBarMessage("Minify failed (output):" + e.message, 5000);
                     //set a error here?
                 }
-                vscode.window.setStatusBarMessage("Minified: was " + better.length + ", now " + d.length, 5000);
+                vscode.window.setStatusBarMessage("Minified to " + ((d.length/better.length*10000)|0)/100 + "% of original", 10000);
 
             });
         });
@@ -40,17 +41,19 @@ function activate(context) {
         if (active) {
             var doc = active.document;
             if (doc) {
+                if (doc.length === 0) {
+                    return vscode.window.setStatusBarMessage("Can't minify empty file", 5000);
+                }
                 return doMinify(doc);
             }
         }
         vscode.window.setStatusBarMessage("File must be saved before minify can run", 5000);
-
     });
     context.subscriptions.push(disposable);
 
-    vscode.workspace.onDidSaveTextDocument(function (doc) {
-		//check if the user wants to do a minify here
-		if (!vscode.workspace.getConfiguration('minify')['minifyExistingOnSave']) return;
+    vscode.workspace.onDidSaveTextDocument(function(doc) {
+        //check if the user wants to do a minify here
+        if (!vscode.workspace.getConfiguration('minify')['minifyExistingOnSave']) return;
         //check if there is a *.min.* file
         var n = doc.fileName.split('.');
         var ext = "min." + n.pop();
