@@ -2,7 +2,7 @@
 	"name": "minify",
 	"displayName": "minify",
 	"description": "Minify for VS Code.\nMinify with command, and (optionally) re-minify on save.",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"publisher": "HookyQR",
 	"engines": {
 		"vscode": "^0.10.1"
@@ -13,6 +13,11 @@
 	"activationEvents": [
 		"*"
 	],
+	"icon":"icon.svg",
+	"galleryBanner": {
+		"color": "#e8e030",
+		"theme": "light"
+	},
 	"main": "./extension",
 	"contributes": {
 		"commands": [
@@ -42,6 +47,8 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/HookyQR/VSCodeMinify"
+	},
+	"bugs":{
+		"url":"https://github.com/HookyQR/VSCodeMinify/issues"
 	}
-	
 }
