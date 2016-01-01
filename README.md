@@ -101,6 +101,9 @@ Since `html-minifier` also uses `clean-css` and `uglify-js`, setting `minifyJS` 
 Like [beautify for VS Code](), minify accepts an array for file extension that you will accept minification of under `minify.JSfiles`, `minify.CSSfiles`, and `minify.HTMLfiles`.
 
 ## Changes:
+### 0.1.1: 01 Jan 2015
+* Fixed use of and enforcement of defaults.
+
 ### 0.1.0: 01 Jan 2015
 * Now includes the inner components of minify directly.
 * Allow preferences for all three minifiers.
