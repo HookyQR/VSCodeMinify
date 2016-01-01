@@ -41,6 +41,7 @@
 				},
 				"minify.js": {
 					"type": "object",
+					"description": "Settings specific to Javascript minification. Tool tips and completion are provided when editing your settings.",
 					"properties": {
 						"sequences": {
 							"type": "boolean",
@@ -166,6 +167,7 @@
 				},
 				"minify.css": {
 					"type": "object",
+					"description": "Settings specific to CSS minification. Tool tips and completion are provided when editing your settings.",
 					"properties": {
 						"advanced": {
 							"type": "boolean",
@@ -248,6 +250,7 @@
 				},
 				"minify.html": {
 					"type": "object",
+					"description": "Settings specific to HTML minification. Tool tips and completion are provided when editing your settings.",
 					"properties": {
 						"removeComments": {
 							"type": "boolean",
@@ -365,8 +368,8 @@
 							"description": "Array of regex'es that allow to ignore certain comments, when matched"
 						},
 						"ignoreCustomFragments": {
-							"type": "array",
-							"default": [],
+							"type": ["array","boolean"],
+							"default": false,
 							"description": "Array of regex'es that allow to ignore certain fragments, when matched (e.g. <?php ... ?>, {{ ... }}, etc.)"
 						},
 						"processScripts": {

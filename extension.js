@@ -5,12 +5,14 @@ const mincss = require('clean-css');
 const minhtml = require('html-minifier');
 const fs = require('fs');
 const path = require('path');
+const defaults = require('./defaults');
 
 //need to register the onSave function here
 
 //register on activation
 function activate(context) {
 	let cleanSettings = function(opts) {
+		opts = defaults(opts);
 		//drop these settings:
 		if (opts.css) {
 			delete opts.css.sourceMap;
@@ -32,7 +34,6 @@ function activate(context) {
 				"% of original" + (stats.errors ? " but with errors." : (stats.warnings ? " but with warnings." : "."));
 			vscode.window.setStatusBarMessage(status, 5000);
 		});
-
 	};
 	let doMinify = function(document) {
 		let outName = document.fileName.split('.');
@@ -47,8 +48,8 @@ function activate(context) {
 		});
 		//what are we minifying?
 		const isJS = ext.toLocaleLowerCase() === 'js';
-		const isCSS =  ext.toLocaleLowerCase() === 'css';
-		const isHTML =  ext.toLocaleLowerCase() === 'html'||ext.toLocaleLowerCase() === 'htm';
+		const isCSS = ext.toLocaleLowerCase() === 'css';
+		const isHTML = ext.toLocaleLowerCase() === 'html' || ext.toLocaleLowerCase() === 'htm';
 		if (isJS) {
 			let opts = settings.js || {};
 			opts.fromString = true;
@@ -61,8 +62,8 @@ function activate(context) {
 				vscode.window.setStatusBarMessage("Minify failed: " + e.message, 5000);
 			}
 		} else if (isCSS) {
-				let base = settings.css.root.slice();
-				settings.css.root=settings.css.root.replace("${workspaceRoot}",vscode.workspace.rootPath||"");
+			let base = settings.css.root.slice();
+			settings.css.root = settings.css.root.replace("${workspaceRoot}", vscode.workspace.rootPath || "");
 			let cleanCSS = new mincss(settings.css);
 			cleanCSS.minify(data, (error, results) => {
 				settings.css.root = base;
@@ -76,13 +77,18 @@ function activate(context) {
 			});
 		} else if (isHTML) {
 			let t = settings.html.minifyCSS;
+			let results;
 			if (typeof t === "object") {
 				if (t.root) {
 					t = t.root.slice();
 					settings.html.minifyCSS.root = "";
 				} else t = false;
 			} else t = false;
-			let results = minhtml.minify(data, settings.html);
+			try {
+				results = minhtml.minify(data, settings.html);
+			} catch (e) {
+				vscode.window.setStatusBarMessage("Minify failed. (exception)", 5000);
+			}
 			if (t) settings.html.minifyCSS.root = t;
 			if (results) sendFileOut(outName, results, {
 				length: data.length
@@ -115,11 +121,11 @@ function activate(context) {
 				}
 			} else {
 				let base = settings.css.root.slice();
-				settings.css.root=settings.css.root.replace("${workspaceRoot}",vscode.workspace.rootPath||"");
+				settings.css.root = settings.css.root.replace("${workspaceRoot}", vscode.workspace.rootPath || "");
 				//strip the root dir from the whole file set
-				files = files.map(f=>f.replace(settings.css.root,""));
+				files = files.map(f => f.replace(settings.css.root, ""));
 				let cleanCSS = new mincss(settings.css);
-				
+
 				cleanCSS.minify(files, (error, results) => {
 					settings.css.root = base;
 					if (results && results.styles && results.styles.length) sendFileOut(outName, results.styles, {
@@ -132,9 +138,7 @@ function activate(context) {
 				});
 			}
 		});
-
 	};
-
 	let disposable = vscode.commands.registerCommand('HookyQR.minify', function() {
 		const active = vscode.window.activeTextEditor;
 		if (!active || !active.document) return;
