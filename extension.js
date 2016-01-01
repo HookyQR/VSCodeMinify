@@ -1,69 +1,190 @@
-var vscode = require( 'vscode' );
-var minify = require( 'minify' );
-var path = require( 'path' );
-var fs = require( 'fs' );
+"use strict";
+const vscode = require('vscode');
+const minjs = require('uglify-js');
+const mincss = require('clean-css');
+const minhtml = require('html-minifier');
+const fs = require('fs');
+const path = require('path');
 
 //need to register the onSave function here
 
 //register on activation
-function activate( context ) {
-	var doMinify = function( doc ) {
-		if ( doc.isUntitled ) return;
-		var better = doc.getText();
-		var type = doc.fileName.split( '.' )
-			.pop()
-			.toLowerCase();
-		var run = 'js';
+function activate(context) {
+	let cleanSettings = function(opts) {
+		//drop these settings:
+		if (opts.css) {
+			delete opts.css.sourceMap;
+			delete opts.css.sourceMapInlineSources;
+			delete opts.debug;
+			delete opts.benchmark;
+		}
+		//switch settings for html:
+		if (opts.css && opts.html && opts.html.minifyCSS === true) opts.html.minifyCSS = opts.css;
+		if (opts.js && opts.html && opts.html.minifyJS === true) opts.html.minifyJS = opts.js;
+		return opts;
+	};
+	let settings = cleanSettings(vscode.workspace.getConfiguration("minify"));
+	let sendFileOut = function(fileName, data, stats) {
 
-		if ( type === 'htm' || type === 'html' ) run = 'html';
-		else if ( type === 'css' ) run = 'css';
-		else if ( type === 'js' ) run = 'js';
-		else return;
-		vscode.window.setStatusBarMessage( "Starting minify", 5000 );
-		minify[ run ]( better, ( e, d ) => {
-			if ( e ) {
-				return vscode.window.setStatusBarMessage( "Minify failed (convert):" + e.message, 5000 );
+		fs.writeFile(fileName, data, "utf8", () => {
+			let status = "Minified: " + stats.files + " files";
+			if (stats.length) status = "Minified: " + (((data.length / stats.length) * 10000) | 0) / 100 +
+				"% of original" + (stats.errors ? " but with errors." : (stats.warnings ? " but with warnings." : "."));
+			vscode.window.setStatusBarMessage(status, 5000);
+		});
+
+	};
+	let doMinify = function(document) {
+		let outName = document.fileName.split('.');
+		const ext = outName.pop();
+		outName.push("min");
+		outName.push(ext);
+		outName = outName.join('.');
+		let data = document.getText();
+		//if the document is empty here, we output an empty file to the min point
+		if (!data.length) return sendFileOut(outName, "", {
+			length: 1
+		});
+		//what are we minifying?
+		const isJS = ext.toLocaleLowerCase() === 'js';
+		const isCSS =  ext.toLocaleLowerCase() === 'css';
+		const isHTML =  ext.toLocaleLowerCase() === 'html'||ext.toLocaleLowerCase() === 'htm';
+		if (isJS) {
+			let opts = settings.js || {};
+			opts.fromString = true;
+			try {
+				let results = minjs.minify(data, opts);
+				sendFileOut(outName, results.code, {
+					length: data.length
+				});
+			} catch (e) {
+				vscode.window.setStatusBarMessage("Minify failed: " + e.message, 5000);
 			}
-			//we save to the same name with the .min insert
-			var outName = doc.fileName.slice( 0, -type.length ) + "min." + type;
-			fs.writeFile( outName, d, "utf8", e => {
-				if ( e ) {
-					return vscode.window.setStatusBarMessage( "Minify failed (output):" + e.message, 5000 );
-					//set a error here?
-				}
-				vscode.window.setStatusBarMessage( "Minified to " + ( ( d.length / better.length * 10000 ) | 0 ) / 100 +
-					"% of original", 10000 );
+		} else if (isCSS) {
+				let base = settings.css.root.slice();
+				settings.css.root=settings.css.root.replace("${workspaceRoot}",vscode.workspace.rootPath||"");
+			let cleanCSS = new mincss(settings.css);
+			cleanCSS.minify(data, (error, results) => {
+				settings.css.root = base;
+				if (results && results.styles) sendFileOut(outName, results.styles, {
+					length: data.length,
+					warnings: results.warnings.length,
+					errors: results.errors.length
+				});
+				else if (error) vscode.window.setStatusBarMessage("Minify failed: " + error.length + " error(s).", 5000);
 
-			} );
-		} );
+			});
+		} else if (isHTML) {
+			let t = settings.html.minifyCSS;
+			if (typeof t === "object") {
+				if (t.root) {
+					t = t.root.slice();
+					settings.html.minifyCSS.root = "";
+				} else t = false;
+			} else t = false;
+			let results = minhtml.minify(data, settings.html);
+			if (t) settings.html.minifyCSS.root = t;
+			if (results) sendFileOut(outName, results, {
+				length: data.length
+			});
+			else vscode.window.setStatusBarMessage("Minify failed.", 5000);
+		}
+		//otherwise, we don't care ...
+	};
+	let doMinifyDir = function(folder, ext) {
+		fs.readdir(folder, (err, files) => {
+			//keep just our extension, drop all pre min'ed
+			files = files.sort()
+				.filter(f => path.extname(f)
+					.slice(1) === ext)
+				.filter(f => !f.endsWith(".min." + ext))
+				.map(f => path.join(folder, f));
+			if (files.length === 0) return vscode.window.setStatusBarMessage("No files for directory minify (", ext, ")",
+				5000);
+			let outName = folder + ".min." + ext;
+			if (ext === 'js') {
+				let opts = settings.js || {};
+				opts.fromString = false;
+				try {
+					let results = minjs.minify(files, opts);
+					sendFileOut(outName, results.code, {
+						files: files.length
+					});
+				} catch (e) {
+					vscode.window.setStatusBarMessage("Minify failed: " + e.message, 5000);
+				}
+			} else {
+				let base = settings.css.root.slice();
+				settings.css.root=settings.css.root.replace("${workspaceRoot}",vscode.workspace.rootPath||"");
+				//strip the root dir from the whole file set
+				files = files.map(f=>f.replace(settings.css.root,""));
+				let cleanCSS = new mincss(settings.css);
+				
+				cleanCSS.minify(files, (error, results) => {
+					settings.css.root = base;
+					if (results && results.styles && results.styles.length) sendFileOut(outName, results.styles, {
+						files: files.length,
+						warnings: results.warnings.length,
+						errors: results.errors.length
+					});
+					else if (error) vscode.window.setStatusBarMessage("Minify failed: " + error.length + " error(s).",
+						5000);
+				});
+			}
+		});
+
 	};
 
-	var disposable = vscode.commands.registerCommand( 'HookyQR.minify', function() {
-		var active = vscode.window.activeTextEditor;
-		if ( active ) {
-			var doc = active.document;
-			if ( doc ) {
-				if ( doc.length === 0 ) {
-					return vscode.window.setStatusBarMessage( "Can't minify empty file", 5000 );
-				}
-				return doMinify( doc );
-			}
-		}
-		vscode.window.setStatusBarMessage( "File must be saved before minify can run", 5000 );
-	} );
-	context.subscriptions.push( disposable );
+	let disposable = vscode.commands.registerCommand('HookyQR.minify', function() {
+		const active = vscode.window.activeTextEditor;
+		if (!active || !active.document) return;
+		if (active.document.isUntitled) return vscode.window.setStatusBarMessage(
+			"File must be saved before minify can run",
+			5000);
+		return doMinify(active.document);
+	});
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand('HookyQR.minifyDir', function() {
+		const active = vscode.window.activeTextEditor;
+		if (!active || !active.document) return;
+		if (active.document.isUntitled) return vscode.window.setStatusBarMessage(
+			"File must be saved before minify can run",
+			5000);
 
-	vscode.workspace.onDidSaveTextDocument( function( doc ) {
+		let ext = active.document.fileName.split('.')
+			.pop()
+			.toLowerCase();
+		if (ext === 'js' || ext === 'css') doMinifyDir(path.dirname(active.document.fileName), ext);
+		else vscode.window.setStatusBarMessage("Active file must be .css or .js to minify parent directory.",
+			5000);
+	});
+	context.subscriptions.push(disposable);
+	disposable = vscode.workspace.onDidChangeConfiguration(() => {
+		settings = cleanSettings(vscode.workspace.getConfiguration("minify"));
+	});
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.workspace.onDidSaveTextDocument(function(doc) {
 		//check if the user wants to do a minify here
-		if ( !vscode.workspace.getConfiguration( 'minify' )
-			.minifyExistingOnSave ) return;
+		if (!vscode.workspace.getConfiguration('minify')
+			.minifyExistingOnSave) return;
 		//check if there is a *.min.* file
-		var n = doc.fileName.split( '.' );
-		var ext = "min." + n.pop();
-		n.push( ext );
-		n = n.join( "." );
+		let n = doc.fileName.split('.');
+		const ext = n.pop();
+		n.push("min");
+		n.push(ext);
+		n = n.join(".");
 		//see if there is a file, if there is, run min
-		if ( fs.existsSync( n ) ) doMinify( doc );
-	} );
+		fs.exists(n, exists => exists ? doMinify(doc) : false);
+		const isJS = (ext.toLowerCase() === "js");
+		const isCSS = (ext.toLowerCase() === "css");
+		if (isJS || isCSS) {
+			//check if the directory has a min
+			n = path.dirname(doc.fileName);
+			n += ".min." + (isJS ? "js" : "css");
+			fs.exists(n, exists => exists ? doMinifyDir(path.dirname(doc.fileName), isJS ? "js" : "css") : false);
+		}
+	});
+	context.subscriptions.push(disposable);
 }
 exports.activate = activate;

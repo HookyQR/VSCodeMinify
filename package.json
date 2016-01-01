@@ -2,7 +2,7 @@
 	"name": "minify",
 	"displayName": "minify",
 	"description": "Minify for VS Code.\nMinify with command, and (optionally) re-minify on save.",
-	"version": "0.0.3",
+	"version": "0.1.0",
 	"publisher": "HookyQR",
 	"engines": {
 		"vscode": "^0.10.1"
@@ -13,7 +13,7 @@
 	"activationEvents": [
 		"*"
 	],
-	"icon":"icon.svg",
+	"icon": "icon.svg",
 	"galleryBanner": {
 		"color": "#e8e030",
 		"theme": "light"
@@ -24,31 +24,401 @@
 			{
 				"command": "HookyQR.minify",
 				"title": "Minify"
+			},
+			{
+				"command": "HookyQR.minifyDir",
+				"title": "Minify Directory"
 			}
 		],
-	"configuration":{
-		"type": "object",
-		"title": "Minify config",
-		"properties":{
-			"minify.minifyExistingOnSave":{
-		"type":"boolean",
-		"default":false,
-		"description":"Minify file on save if a related (.min.[ext]) file already exists"}
+		"configuration": {
+			"type": "object",
+			"title": "Minify config",
+			"properties": {
+				"minify.minifyExistingOnSave": {
+					"type": "boolean",
+					"default": false,
+					"description": "Minify file on save if a related (.min.[ext]) file already exists. Includes directory minification."
+				},
+				"minify.js": {
+					"type": "object",
+					"properties": {
+						"sequences": {
+							"type": "boolean",
+							"default": true,
+							"description": "oin consecutive simple statements using the comma operator"
+						},
+						"properties": {
+							"type": "boolean",
+							"default": true,
+							"description": "ewrite property access using the dot notation, for example foo['bar'] → foo.bar"
+						},
+						"dead_code": {
+							"type": "boolean",
+							"default": true,
+							"description": "remove unreachable code"
+						},
+						"drop_debugger": {
+							"type": "boolean",
+							"default": true,
+							"description": "remove debugger; statements"
+						},
+						"unsafe": {
+							"type": "boolean",
+							"default": false,
+							"description": "(default: false) -- apply \"unsafe\" transformations. See http://lisperator.net/uglifyjs/"
+						},
+						"conditionals": {
+							"type": "boolean",
+							"default": true,
+							"description": "apply optimizations for if-s and conditional expressions"
+						},
+						"comparisons": {
+							"type": "boolean",
+							"default": true,
+							"description": "apply certain optimizations to binary nodes, for example: !(a <= b) → a > b (only when unsafe), attempts to negate binary nodes, e.g. a = !b && !c && !d && !e → a=!(b||c||d||e) etc."
+						},
+						"evaluate": {
+							"type": "boolean",
+							"default": true,
+							"description": "attempt to evaluate constant expressions"
+						},
+						"booleans": {
+							"type": "boolean",
+							"default": true,
+							"description": "various optimizations for boolean context, for example !!a ? b : c → a ? b : c"
+						},
+						"loops": {
+							"type": "boolean",
+							"default": true,
+							"description": "optimizations for do, while and for loops when we can statically determine the condition"
+						},
+						"unused": {
+							"type": "boolean",
+							"default": true,
+							"description": "drop unreferenced functions and variables"
+						},
+						"hoist_funs": {
+							"type": "boolean",
+							"default": true,
+							"description": "hoist function declarations"
+						},
+						"hoist_vars": {
+							"type": "boolean",
+							"default": false,
+							"description": "hoist var declarations (this is false by default because it seems to increase the size of the output in general)"
+						},
+						"if_return": {
+							"type": "boolean",
+							"default": true,
+							"description": "optimizations for if/return and if/continue"
+						},
+						"join_vars": {
+							"type": "boolean",
+							"default": true,
+							"description": "join consecutive var statements"
+						},
+						"cascade": {
+							"type": "boolean",
+							"default": true,
+							"description": "small optimization for sequences, transform x, x into x and x = something(), x into x = something()"
+						},
+						"warnings": {
+							"type": "boolean",
+							"default": true,
+							"description": "Display warnings when dropping unreachable code or unused declarations etc."
+						},
+						"negate_iife": {
+							"type": "boolean",
+							"default": false,
+							"description": "Negate \"Immediately-Called Function Expressions\" where the return value is discarded, to avoid the parens that the code generator would insert."
+						},
+						"pure_getters": {
+							"type": "boolean",
+							"default": false,
+							"description": "The default is false. If you pass true for this, UglifyJS will assume that object property access (e.g. foo.bar or foo[\"bar\"]) doesn't have any side effects."
+						},
+						"pure_funcs": {
+							"type": ["array","null"],
+							"default": null,
+							"description": "An array of function names that UglifyJS will assume do not produce side effects."
+						},
+						"drop_console": {
+							"type": "boolean",
+							"default": false,
+							"description": "Pass true to discard calls to console.* functions."
+						},
+						"keep_fargs": {
+							"type": "boolean",
+							"default": true,
+							"description": "Prevents the compressor from discarding unused function arguments. You need this for code which relies on Function.length."
+						},
+						"keep_fnames": {
+							"type": "boolean",
+							"default": false,
+							"description": "Pass true to prevent the compressor from mangling/discarding function names. Useful for code relying on Function.prototype.name."
+						},
+						"global_defs": {
+							"type": "boolean",
+							"default": {},
+							"description": "Global definitions"
+						}
+					}
+				},
+				"minify.css": {
+					"type": "object",
+					"properties": {
+						"advanced": {
+							"type": "boolean",
+							"default": true,
+							"description": "set to false to disable advanced optimizations - selector & property merging, reduction, etc."
+						},
+						"aggressiveMerging": {
+							"type": "boolean",
+							"default": true,
+							"description": "set to false to disable aggressive merging of properties."
+						},
+						"compatibility": {
+							"type": "string",
+							"default": "*",
+							"description": "enables compatibility mode, see https://github.com/jakubpawlowicz/clean-css#how-to-set-a-compatibility-mode"
+						},
+						"inliner": {
+							"type": "object",
+							"default": {},
+							"description": "a hash of options for @import inliner, see https://github.com/jakubpawlowicz/clean-css/blob/master/test/protocol-imports-test.js#L372 for examples"
+							
+						},
+						"keepBreaks": {
+							"type": "boolean",
+							"default": false,
+							"description": "whether to keep line breaks"
+						},
+						"keepSpecialComments": {
+							"type": ["string","integer"],
+							"enum": ["*",1,0],
+							"default": "*",
+							"description": "* for keeping all (default), 1 for keeping first one only, 0 for removing all"
+						},
+						"mediaMerging": {
+							"type": "boolean",
+							"default": true,
+							"description": "whether to merge @media at-rules (default is true)"
+						},
+						"processImport": {
+							"type": "boolean",
+							"default": true,
+							"description": "whether to process @import rules"
+						},
+						"processImportFrom": {
+							"type": "array",
+							"default": ["all"],
+							"description": "a list of @import rules, can be ['all'] (default), ['local'], ['remote'], or a blacklisted path e.g. ['!fonts.googleapis.com']"
+						},
+						"rebase": {
+							"type": "boolean",
+							"default": true,
+							"description": "set to false to skip URL rebasing"
+						},
+						"restructuring": {
+							"type": "boolean",
+							"default": true,
+							"description": "set to false to disable restructuring in advanced optimizations"
+						},
+						"root": {
+							"type": "string",
+							"default": "${workspaceRoot}",
+							"description": "path to resolve absolute @import rules and rebase relative URLs"
+						},
+						"roundingPrecision": {
+							"type": "integer",
+							"default": 2,
+							"description": "rounding precision; defaults to 2; -1 disables rounding"
+						},
+						"semanticMerging": {
+							"type": "boolean",
+							"default": false,
+							"description": "set to true to enable semantic merging mode which assumes BEM-like content (default is false as it's highly likely this will break your stylesheets - use with caution!)"
+						},
+						"shorthandCompacting": {
+							"type": "boolean",
+							"default": true,
+							"description": "set to false to skip shorthand compacting (default is true unless sourceMap is set when it's false)"
+						}
+					}
+				},
+				"minify.html": {
+					"type": "object",
+					"properties": {
+						"removeComments": {
+							"type": "boolean",
+							"default": true,
+							"description": "Strip HTML comments"
+						},
+						"removeCommentsFromCDATA": {
+							"type": "boolean",
+							"default": true,
+							"description": "Strip HTML comments from scripts and styles"
+						},
+						"removeCDATASectionsFromCDATA": {
+							"type": "boolean",
+							"default": true,
+							"description": "Remove CDATA sections from script and style elements"
+						},
+						"collapseWhitespace": {
+							"type": "boolean",
+							"default": true,
+							"description": "Collapse white space that contributes to text nodes in a document tree."
+						},
+						"conservativeCollapse": {
+							"type": "boolean",
+							"default": false,
+							"description": "Always collapse to 1 space (never remove it entirely). Must be used in conjunction with \"collapseWhitespace\":true"
+						},
+						"preserveLineBreaks": {
+							"type": "boolean",
+							"default": false,
+							"description": "Always collapse to 1 line break (never remove it entirely) when whitespace between tags include a line break. Must be used in conjunction with \"collapseWhitespace\":true"
+						},
+						"collapseBooleanAttributes": {
+							"type": "boolean",
+							"default": true,
+							"description": "Omit attribute values from boolean attributes"
+						},
+						"removeAttributeQuotes": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove quotes around attributes when possible."
+						},
+						"removeRedundantAttributes": {
+							"type": "boolean",
+							"default": true,
+							"description": "Remove attributes when value matches default."
+						},
+						"preventAttributesEscaping": {
+							"type": "boolean",
+							"default": false,
+							"description": "Prevents the escaping of the values of attributes."
+						},
+						"useShortDoctype": {
+							"type": "boolean",
+							"default": true,
+							"description": "Replaces the doctype with the short (HTML5) doctype"
+						},
+						"removeEmptyAttributes": {
+							"type": "boolean",
+							"default": true,
+							"description": "Remove all attributes with whitespace-only values"
+						},
+						"removeScriptTypeAttributes": {
+							"type": "boolean",
+							"default": true,
+							"description": "Remove type=\"text/javascript\" from script tags. Other type attribute values are left intact."
+						},
+						"removeStyleLinkTypeAttributes": {
+							"type": "boolean",
+							"default": true,
+							"description": "Remove type=\"text/css\" from style and link tags. Other type attribute values are left intact."
+						},
+						"removeOptionalTags": {
+							"type": "boolean",
+							"default": true,
+							"description": "Remove unrequired tags"
+						},
+						"removeIgnored": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove all elements with empty contents"
+						},
+						"removeEmptyElements": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove all elements with empty contents"
+						},
+						"keepClosingSlash": {
+							"type": "boolean",
+							"default": false,
+							"description": "Keep the trailing slash on singleton elements"
+						},
+						"caseSensitive": {
+							"type": "boolean",
+							"default": false,
+							"description": "Treat attributes in case sensitive manner (useful for custom HTML tags.)"
+						},
+						"minifyJS": {
+							"type": ["boolean","object"],
+							"default": true,
+							"description": "Minify Javascript in script elements and on* attributes (uses UglifyJS)"
+						},
+						"minifyCSS": {
+							"type": ["boolean","object"],
+							"default": true,
+							"description": "Minify CSS in style elements and style attributes (uses clean-css)"
+						},
+						"minifyURLs": {
+							"type": ["boolean","object"],
+							"default": false,
+							"description": "Minify URLs in various attributes (uses relateurl) see https://github.com/stevenvachon/relateurl"
+						},
+						"ignoreCustomComments": {
+							"type": "array",
+							"default": [],
+							"description": "Array of regex'es that allow to ignore certain comments, when matched"
+						},
+						"ignoreCustomFragments": {
+							"type": "array",
+							"default": [],
+							"description": "Array of regex'es that allow to ignore certain fragments, when matched (e.g. <?php ... ?>, {{ ... }}, etc.)"
+						},
+						"processScripts": {
+							"type": "array",
+							"default": [],
+							"description": "Array of strings corresponding to types of script elements to process through minifier (e.g. text/ng-template, text/x-handlebars-template, etc.)"
+						},
+						"maxLineLength": {
+							"type": ["boolean","integer"],
+							"default": false,
+							"description": "Specify a maximum line length. Compressed output will be split by newlines at valid HTML split-points."
+						},
+						"customAttrAssign": {
+							"type": "array",
+							"default": [],
+							"description": "Arrays of regex'es that allow to support custom attribute assign expressions (e.g. '<div flex?=\"{{mode != cover}}\"></div>')"
+						},
+						"customAttrSurround": {
+							"type": "array",
+							"default": [],
+							"description": "Arrays of regex'es that allow to support custom attribute surround expressions (e.g. <input {{#if value}}checked=\"checked\"{{/if}}>)"
+						},
+						"customAttrCollapse": {
+							"type": "string",
+							"default": "",
+							"description": "Regex that specifies custom attribute to strip newlines from (e.g. /ng\\-class/)"
+						},
+						"quoteCharacter": {
+							"type": "string",
+							"default": "\"",
+							"maxLength": 1,
+							"description": "Type of quote to use for attribute values (' or \")"
+						}
+					}
+				}
+			}
 		}
-	}
 	},
 	"devDependencies": {
 		"vscode": "0.10.x"
 	},
 	"license": "MIT",
 	"dependencies": {
-		"minify": "^2.0.2"
+		"uglify-js": "^2.6.1",
+		"clean-css": "^3.4.8",
+		"html-minifier": "^1.0.1"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/HookyQR/VSCodeMinify"
 	},
-	"bugs":{
-		"url":"https://github.com/HookyQR/VSCodeMinify/issues"
+	"bugs": {
+		"url": "https://github.com/HookyQR/VSCodeMinify/issues"
 	}
 }
