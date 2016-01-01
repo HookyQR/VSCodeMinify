@@ -98,7 +98,7 @@ Optionally runs minify on save when a matching minified file (and/or directory) 
 
 Since `html-minifier` also uses `clean-css` and `uglify-js`, setting `minifyJS` or `minifyCSS` to **`true`** will embed the settings you have supplied for those minifiers automatically. You can provide your own settings as an object if you want some different methods to be used.
 
-Like [beautify for VS Code](), minify accepts an array for file extension that you will accept minification of under `minify.JSfiles`, `minify.CSSfiles`, and `minify.HTMLfiles`.
+Like [beautify for VS Code](https://marketplace.visualstudio.com/items/HookyQR.beautify), minify accepts an array for file extension that you will accept minification of under `minify.JSfiles`, `minify.CSSfiles`, and `minify.HTMLfiles`.
 
 ## Changes:
 ### 0.1.1: 01 Jan 2015
