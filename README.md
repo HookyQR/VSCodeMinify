@@ -4,8 +4,8 @@
 
 Minify your js, css and html files to save transmit bandwidth. Calls each of the minifiers directly, allowing settings to be passed:
 * **JS:** [uglify-js](http://lisperator.net/uglifyjs) v2.6.1
-* **CSS:** [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.8
-* **HTML:** [html-minifier](http://kangax.github.io/html-minifier/) v1.0.1
+* **CSS:** [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.9
+* **HTML:** [html-minifier](http://kangax.github.io/html-minifier/) v1.1.1
 
 Run the file minifier with **F1** `Minify`.
 
@@ -101,10 +101,13 @@ Since `html-minifier` also uses `clean-css` and `uglify-js`, setting `minifyJS` 
 Like [beautify for VS Code](https://marketplace.visualstudio.com/items/HookyQR.beautify), minify accepts an array for file extension that you will accept minification of under `minify.JSfiles`, `minify.CSSfiles`, and `minify.HTMLfiles`.
 
 ## Changes:
-### 0.1.1: 01 Jan 2015
+### 0.2.0: 13 Feb 2016
+* Update embeded dependencies (clean-css & html-minifier).
+
+### 0.1.1: 01 Jan 2016
 * Fixed use of and enforcement of defaults.
 
-### 0.1.0: 01 Jan 2015
+### 0.1.0: 01 Jan 2016
 * Now includes the inner components of minify directly.
 * Allow preferences for all three minifiers.
 * Allow minifiying whole directories for css and js.
