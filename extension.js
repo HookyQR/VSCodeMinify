@@ -11,7 +11,6 @@ const defaults = require('./defaults');
 
 //register on activation
 function activate(context) {
-	console.log("NODE:",process.versions);
 	let cleanSettings = function(opts) {
 		opts = defaults(opts);
 		//drop these settings:
