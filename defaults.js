@@ -69,7 +69,7 @@ const defaults = {
 		"minifyCSS": true, //uses minify.css settings if true
 		"minifyURLs": false,
 		"ignoreCustomComments": [],
-		"ignoreCustomFragments": false,
+		"ignoreCustomFragments": [],
 		"processScripts": [],
 		"maxLineLength": false,
 		"customAttrAssign": [],
