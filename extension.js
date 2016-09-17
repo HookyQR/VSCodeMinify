@@ -76,6 +76,7 @@ function activate(context) {
 
 			});
 		} else if (isHTML) {
+			// convert regex strings
 			let t = settings.html.minifyCSS;
 			let results;
 			if (typeof t === "object") {
@@ -85,9 +86,20 @@ function activate(context) {
 				} else t = false;
 			} else t = false;
 			try {
+				settings.html.ignoreCustomFragments = settings.html.ignoreCustomFragments || [];
+				['customAttrAssign', 'customAttrSurround', 'customEventAttributes', 'ignoreCustomComments', 'ignoreCustomFragments']
+				.forEach(n => {
+					let e = settings.html[n];
+					if (Array.isArray(e)) {
+						settings.html[n] = e.map(ee => (typeof ee === 'string') ? new RegExp(ee.replace(/^\/(.*)\/$/, '$1')) : ee);
+					}
+				});
+				if (typeof settings.html.customAttrCollapse === 'string')
+					settings.html.customAttrCollapse = new RegExp(settings.html.customAttrCollapse.replace(/^\/(.*)\/$/, '$1'));
 				results = minhtml.minify(data, settings.html);
 			} catch (e) {
-				vscode.window.setStatusBarMessage("Minify failed. (exception)", 5000);
+				console.log(e, settings.html);
+				return vscode.window.setStatusBarMessage("Minify failed. (exception)", 5000);
 			}
 			if (t) settings.html.minifyCSS.root = t;
 			if (results) sendFileOut(outName, results, {

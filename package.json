@@ -2,17 +2,13 @@
 	"name": "minify",
 	"displayName": "minify",
 	"description": "Minify for VS Code.\nMinify with command, and (optionally) re-minify on save.",
-	"version": "0.2.0",
+	"version": "0.2.3",
 	"publisher": "HookyQR",
 	"engines": {
 		"vscode": "^0.10.1"
 	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"*"
-	],
+	"categories": ["Other"],
+	"activationEvents": ["*"],
 	"icon": "icon.svg",
 	"galleryBanner": {
 		"color": "#e8e030",
@@ -20,16 +16,14 @@
 	},
 	"main": "./extension",
 	"contributes": {
-		"commands": [
-			{
+		"commands": [{
 				"command": "HookyQR.minify",
 				"title": "Minify"
 			},
 			{
 				"command": "HookyQR.minifyDir",
 				"title": "Minify Directory"
-			}
-		],
+			}],
 		"configuration": {
 			"type": "object",
 			"title": "Minify config",
@@ -67,6 +61,11 @@
 							"type": "boolean",
 							"default": false,
 							"description": "(default: false) -- apply \"unsafe\" transformations. See http://lisperator.net/uglifyjs/"
+						},
+						"unsafe_comps": {
+							"type": "boolean",
+							"default": false,
+							"description": "(default: false) -- Reverse < and <= to > and >= to allow improved compression."
 						},
 						"conditionals": {
 							"type": "boolean",
@@ -123,6 +122,11 @@
 							"default": true,
 							"description": "small optimization for sequences, transform x, x into x and x = something(), x into x = something()"
 						},
+						"collapse_vars": {
+							"type": "boolean",
+							"default": false,
+							"description": "(default: false) -- Collapse single-use var and const definitions when possible."
+						},
 						"warnings": {
 							"type": "boolean",
 							"default": true,
@@ -139,7 +143,7 @@
 							"description": "The default is false. If you pass true for this, UglifyJS will assume that object property access (e.g. foo.bar or foo[\"bar\"]) doesn't have any side effects."
 						},
 						"pure_funcs": {
-							"type": ["array","null"],
+							"type": ["array", "null"],
 							"default": null,
 							"description": "An array of function names that UglifyJS will assume do not produce side effects."
 						},
@@ -157,6 +161,11 @@
 							"type": "boolean",
 							"default": false,
 							"description": "Pass true to prevent the compressor from mangling/discarding function names. Useful for code relying on Function.prototype.name."
+						},
+						"passes": {
+							"type": "integer",
+							"default": 1,
+							"description": "Number of times to run compress. Use an integer argument larger than 1 to further reduce code size in some cases. Note: raising the number of passes will increase uglify compress time."
 						},
 						"global_defs": {
 							"type": "boolean",
@@ -188,7 +197,6 @@
 							"type": "object",
 							"default": {},
 							"description": "a hash of options for @import inliner, see https://github.com/jakubpawlowicz/clean-css/blob/master/test/protocol-imports-test.js#L372 for examples"
-							
 						},
 						"keepBreaks": {
 							"type": "boolean",
@@ -196,8 +204,8 @@
 							"description": "whether to keep line breaks"
 						},
 						"keepSpecialComments": {
-							"type": ["string","integer"],
-							"enum": ["*",1,0],
+							"type": ["string", "integer"],
+							"enum": ["*", 1, 0],
 							"default": "*",
 							"description": "* for keeping all (default), 1 for keeping first one only, 0 for removing all"
 						},
@@ -252,20 +260,20 @@
 					"type": "object",
 					"description": "Settings specific to HTML minification. Tool tips and completion are provided when editing your settings.",
 					"properties": {
-						"removeComments": {
+						"caseSensitive": {
 							"type": "boolean",
-							"default": true,
-							"description": "Strip HTML comments"
+							"default": false,
+							"description": "Treat attributes in case sensitive manner (useful for custom HTML tags.)"
 						},
-						"removeCommentsFromCDATA": {
+						"collapseBooleanAttributes": {
 							"type": "boolean",
 							"default": true,
-							"description": "Strip HTML comments from scripts and styles"
+							"description": "Omit attribute values from boolean attributes"
 						},
-						"removeCDATASectionsFromCDATA": {
+						"collapseInlineTagWhitespace": {
 							"type": "boolean",
-							"default": true,
-							"description": "Remove CDATA sections from script and style elements"
+							"default": false,
+							"description": "Don't leave any spaces between display:inline; elements when collapsing. Must be used in conjunction with collapseWhitespace=true."
 						},
 						"collapseWhitespace": {
 							"type": "boolean",
@@ -277,131 +285,156 @@
 							"default": false,
 							"description": "Always collapse to 1 space (never remove it entirely). Must be used in conjunction with \"collapseWhitespace\":true"
 						},
-						"preserveLineBreaks": {
-							"type": "boolean",
-							"default": false,
-							"description": "Always collapse to 1 line break (never remove it entirely) when whitespace between tags include a line break. Must be used in conjunction with \"collapseWhitespace\":true"
-						},
-						"collapseBooleanAttributes": {
-							"type": "boolean",
-							"default": true,
-							"description": "Omit attribute values from boolean attributes"
-						},
-						"removeAttributeQuotes": {
-							"type": "boolean",
-							"default": false,
-							"description": "Remove quotes around attributes when possible."
-						},
-						"removeRedundantAttributes": {
-							"type": "boolean",
-							"default": true,
-							"description": "Remove attributes when value matches default."
-						},
-						"preventAttributesEscaping": {
-							"type": "boolean",
-							"default": false,
-							"description": "Prevents the escaping of the values of attributes."
-						},
-						"useShortDoctype": {
-							"type": "boolean",
-							"default": true,
-							"description": "Replaces the doctype with the short (HTML5) doctype"
-						},
-						"removeEmptyAttributes": {
-							"type": "boolean",
-							"default": true,
-							"description": "Remove all attributes with whitespace-only values"
-						},
-						"removeScriptTypeAttributes": {
-							"type": "boolean",
-							"default": true,
-							"description": "Remove type=\"text/javascript\" from script tags. Other type attribute values are left intact."
-						},
-						"removeStyleLinkTypeAttributes": {
-							"type": "boolean",
-							"default": true,
-							"description": "Remove type=\"text/css\" from style and link tags. Other type attribute values are left intact."
-						},
-						"removeOptionalTags": {
-							"type": "boolean",
-							"default": true,
-							"description": "Remove unrequired tags"
-						},
-						"removeIgnored": {
-							"type": "boolean",
-							"default": false,
-							"description": "Remove all elements with empty contents"
-						},
-						"removeEmptyElements": {
-							"type": "boolean",
-							"default": false,
-							"description": "Remove all elements with empty contents"
-						},
-						"keepClosingSlash": {
-							"type": "boolean",
-							"default": false,
-							"description": "Keep the trailing slash on singleton elements"
-						},
-						"caseSensitive": {
-							"type": "boolean",
-							"default": false,
-							"description": "Treat attributes in case sensitive manner (useful for custom HTML tags.)"
-						},
-						"minifyJS": {
-							"type": ["boolean","object"],
-							"default": true,
-							"description": "Minify Javascript in script elements and on* attributes (uses UglifyJS)"
-						},
-						"minifyCSS": {
-							"type": ["boolean","object"],
-							"default": true,
-							"description": "Minify CSS in style elements and style attributes (uses clean-css)"
-						},
-						"minifyURLs": {
-							"type": ["boolean","object"],
-							"default": false,
-							"description": "Minify URLs in various attributes (uses relateurl) see https://github.com/stevenvachon/relateurl"
-						},
-						"ignoreCustomComments": {
-							"type": "array",
-							"default": [],
-							"description": "Array of regex'es that allow to ignore certain comments, when matched"
-						},
-						"ignoreCustomFragments": {
-							"type": ["array","boolean"],
-							"default": false,
-							"description": "Array of regex'es that allow to ignore certain fragments, when matched (e.g. <?php ... ?>, {{ ... }}, etc.)"
-						},
-						"processScripts": {
-							"type": "array",
-							"default": [],
-							"description": "Array of strings corresponding to types of script elements to process through minifier (e.g. text/ng-template, text/x-handlebars-template, etc.)"
-						},
-						"maxLineLength": {
-							"type": ["boolean","integer"],
-							"default": false,
-							"description": "Specify a maximum line length. Compressed output will be split by newlines at valid HTML split-points."
-						},
 						"customAttrAssign": {
 							"type": "array",
 							"default": [],
 							"description": "Arrays of regex'es that allow to support custom attribute assign expressions (e.g. '<div flex?=\"{{mode != cover}}\"></div>')"
+						},
+						"customAttrCollapse": {
+							"type": "string",
+							"default": "",
+							"description": "Regex that specifies custom attribute to strip newlines from (e.g. \"ng\\-class/\")"
 						},
 						"customAttrSurround": {
 							"type": "array",
 							"default": [],
 							"description": "Arrays of regex'es that allow to support custom attribute surround expressions (e.g. <input {{#if value}}checked=\"checked\"{{/if}}>)"
 						},
-						"customAttrCollapse": {
-							"type": "string",
-							"default": "",
-							"description": "Regex that specifies custom attribute to strip newlines from (e.g. /ng\\-class/)"
+						"customEventAttributes": {
+							"type": "array",
+							"default": ["^on[a-z]{3,}$"],
+							"description": "Arrays of regex'es that allow to support custom event attributes for minifyJS (e.g. ng-click)"
+						},
+						"decodeEntities": {
+							"type": "boolean",
+							"default": false,
+							"description": "Use direct Unicode characters whenever possible"
+						},
+						"html5": {
+							"type": "boolean",
+							"default": true,
+							"description": "Parse input according to HTML5 specifications"
+						},
+						"ignoreCustomComments": {
+							"type": "array",
+							"default": ["^!"],
+							"description": "Array of regex'es that allow to ignore certain comments, when matched"
+						},
+						"ignoreCustomFragments": {
+							"type": "array",
+							"default": ["<%[\\s\\S]*?%>", "<\\?[\\s\\S]*?\\?>"],
+							"description": "Array of regex'es that allow to ignore certain fragments, when matched (e.g. <?php ... ?>, {{ ... }}, etc.)"
+						},
+						"includeAutoGeneratedTags": {
+							"type": "boolean",
+							"default": true,
+							"description": "Insert tags generated by HTML parser"
+						},
+						"keepClosingSlash": {
+							"type": "boolean",
+							"default": false,
+							"description": "Keep the trailing slash on singleton elements"
+						},
+						"maxLineLength": {
+							"type": ["boolean", "integer"],
+							"default": false,
+							"description": "Specify a maximum line length. Compressed output will be split by newlines at valid HTML split-points."
+						},
+						"minifyCSS": {
+							"type": ["boolean", "object"],
+							"default": true,
+							"description": "Minify CSS in style elements and style attributes (uses clean-css)"
+						},
+						"minifyJS": {
+							"type": ["boolean", "object"],
+							"default": true,
+							"description": "Minify Javascript in script elements and on* attributes (uses UglifyJS)"
+						},
+						"minifyURLs": {
+							"type": ["boolean", "object"],
+							"default": false,
+							"description": "Minify URLs in various attributes (uses relateurl) see https://github.com/stevenvachon/relateurl"
+						},
+						"preserveLineBreaks": {
+							"type": "boolean",
+							"default": false,
+							"description": "Always collapse to 1 line break (never remove it entirely) when whitespace between tags include a line break. Must be used in conjunction with \"collapseWhitespace\":true"
+						},
+						"preventAttributesEscaping": {
+							"type": "boolean",
+							"default": false,
+							"description": "Prevents the escaping of the values of attributes."
+						},
+						"processConditionalComments": {
+							"type": "boolean",
+							"default": false,
+							"description": "Process contents of conditional comments through minifier"
+						},
+						"processScripts": {
+							"type": "array",
+							"default": [],
+							"description": "Array of strings corresponding to types of script elements to process through minifier (e.g. text/ng-template, text/x-handlebars-template, etc.)"
 						},
 						"quoteCharacter": {
 							"type": "string",
 							"default": "\"",
 							"maxLength": 1,
 							"description": "Type of quote to use for attribute values (' or \")"
+						},
+						"removeAttributeQuotes": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove quotes around attributes when possible."
+						},
+						"removeComments": {
+							"type": "boolean",
+							"default": false,
+							"description": "Strip HTML comments"
+						},
+						"removeEmptyAttributes": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove all attributes with whitespace-only values"
+						},
+						"removeEmptyElements": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove all elements with empty contents"
+						},
+						"removeOptionalTags": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove unrequired tags"
+						},
+						"removeRedundantAttributes": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove attributes when value matches default."
+						},
+						"removeScriptTypeAttributes": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove type=\"text/javascript\" from script tags. Other type attribute values are left intact."
+						},
+						"removeStyleLinkTypeAttributes": {
+							"type": "boolean",
+							"default": false,
+							"description": "Remove type=\"text/css\" from style and link tags. Other type attribute values are left intact."
+						},
+						"sortAttributes": {
+							"type": "boolean",
+							"default": false,
+							"description": "Sort attributes by frequency"
+						},
+						"sortClassName": {
+							"type": "boolean",
+							"default": false,
+							"description": "Sort style classes by frequency"
+						},
+						"useShortDoctype": {
+							"type": "boolean",
+							"default": false,
+							"description": "Replaces the doctype with the short (HTML5) doctype"
 						}
 					}
 				}
@@ -413,9 +446,9 @@
 	},
 	"license": "MIT",
 	"dependencies": {
-		"uglify-js": ">=2.6.1",
-		"clean-css": ">=3.4.8",
-		"html-minifier": ">=1.0.1"
+		"uglify-js": ">=2.7.0",
+		"clean-css": ">=3.4.19",
+		"html-minifier": ">=3.0.2"
 	},
 	"repository": {
 		"type": "git",
