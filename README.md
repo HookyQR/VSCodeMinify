@@ -107,8 +107,17 @@ Since `html-minifier` also uses `clean-css` and `uglify-js`, setting `minifyJS` 
 Like [beautify for VS Code](https://marketplace.visualstudio.com/items/HookyQR.beautify), minify accepts an array for file extension that you will accept minification of under `minify.JSfiles`, `minify.CSSfiles`, and `minify.HTMLfiles`.
 
 ## Changes:
+### 0.2.5: 14 Oct 2016
+* Update dependencies.
+  * [uglify-js](http://lisperator.net/uglifyjs) v2.7.3
+  * [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.20
+  * [html-minifier](http://kangax.github.io/html-minifier/) v3.1.0
+
 ### 0.2.4: 18 Sep 2016
 * Update dependencies.
+  * [uglify-js](http://lisperator.net/uglifyjs) v2.7.3
+  * [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.19
+  * [html-minifier](http://kangax.github.io/html-minifier/) v3.0.3
 
 ### 0.2.3: 12 Aug 2016
 * force ignoreCustomFragments existance so html-minifier works.
@@ -122,21 +131,15 @@ Like [beautify for VS Code](https://marketplace.visualstudio.com/items/HookyQR.b
 ### 0.2.0: 13 Feb 2016
 * Update embeded dependencies (clean-css & html-minifier).
 
-### 0.1.1: 01 Jan 2016
+### 0.0.3 >> 0.1.1:
 * Fixed use of and enforcement of defaults.
-
-### 0.1.0: 01 Jan 2016
 * Now includes the inner components of minify directly.
 * Allow preferences for all three minifiers.
 * Allow minifiying whole directories for css and js.
 
-
-### 0.0.3: 24 Dec 2015
+### 0.0.1 >> 0.0.3: 24 Dec 2015
 * Removed suborinate module tests from package output
 * Added icon
-
-### 0.0.2: 17 Dec 2015
 * Remove `json` from valid types.
 * Indicate fail on empty file.
 * Change report line to percentage.
-
