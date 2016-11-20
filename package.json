@@ -2,10 +2,10 @@
 	"name": "minify",
 	"displayName": "minify",
 	"description": "Minify for VS Code.\nMinify with command, and (optionally) re-minify on save.",
-	"version": "0.2.5",
+	"version": "0.3.0",
 	"publisher": "HookyQR",
 	"engines": {
-		"vscode": "^0.10.1"
+		"vscode": "^1.6.0"
 	},
 	"categories": ["Other"],
 	"activationEvents": ["*"],
@@ -31,152 +31,282 @@
 				"minify.minifyExistingOnSave": {
 					"type": "boolean",
 					"default": false,
-					"description": "Minify file on save if a related (.min.[ext]) file already exists. Includes directory minification."
+					"description": "Minify file on save if a related (.min.[ext]) file already exists. Includes directory minification/"
 				},
 				"minify.js": {
 					"type": "object",
 					"description": "Settings specific to Javascript minification. Tool tips and completion are provided when editing your settings.",
+					"default": {
+						"mangle": true,
+						"compress": {
+							"sequences": true,
+							"properties": true,
+							"dead_code": true,
+							"drop_debugger": true,
+							"unsafe": false,
+							"unsafe_comps": false,
+							"conditionals": true,
+							"comparisons": true,
+							"evaluate": true,
+							"booleans": true,
+							"loops": true,
+							"unused": true,
+							"hoist_funs": true,
+							"keep_fargs": true,
+							"keep_fnames": false,
+							"hoist_vars": false,
+							"if_return": true,
+							"join_vars": true,
+							"collapse_vars": false,
+							"reduce_vars": false,
+							"cascade": true,
+							"side_effects": true,
+							"pure_getters": false,
+							"pure_funcs": null,
+							"negate_iife": false,
+							"drop_console": false,
+							"passes": 1,
+							"global_defs": {}
+						},
+						"output": {
+							"ascii_only": false,
+							"inline_script": false,
+							"max_line_len": 32000,
+							"bracketize": false,
+							"semicolons": true,
+							"comments": false,
+							"shebang": true,
+							"preamble": null,
+							"quote_style": "best"
+						}
+					},
 					"properties": {
-						"sequences": {
+						"mangle": {
 							"type": "boolean",
 							"default": true,
-							"description": "oin consecutive simple statements using the comma operator"
+							"description": "[UglifyJS] mangle non-toplevel function and variable (including argument) names"
 						},
-						"properties": {
-							"type": "boolean",
-							"default": true,
-							"description": "ewrite property access using the dot notation, for example foo['bar'] → foo.bar"
+						"compress": {
+							"type": "object",
+							"description": "Compressor settings",
+							"properties": {
+								"sequences": {
+									"type": "boolean",
+									"default": true,
+									"description": "join consecutive simple statements using the comma operator"
+								},
+								"properties": {
+									"type": "boolean",
+									"default": true,
+									"description": "rewrite property access using the dot notation, for example foo['bar'] → foo.bar"
+								},
+								"dead_code": {
+									"type": "boolean",
+									"default": true,
+									"description": "remove unreachable code"
+								},
+								"drop_debugger": {
+									"type": "boolean",
+									"default": true,
+									"description": "remove `debugger;` statements"
+								},
+								"unsafe": {
+									"type": "boolean",
+									"default": false,
+									"description": "apply \"unsafe\" transformations. See http://lisperator.net/uglifyjs/"
+								},
+								"unsafe_comps": {
+									"type": "boolean",
+									"default": false,
+									"description": "reverse < and <= to > and >= to allow improved compression."
+								},
+								"conditionals": {
+									"type": "boolean",
+									"default": true,
+									"description": "apply optimizations for if-s and conditional expressions"
+								},
+								"comparisons": {
+									"type": "boolean",
+									"default": true,
+									"description": "apply certain optimizations to binary nodes, for example: !(a <= b) → a > b (only when unsafe), attempts to negate binary nodes, e.g. a = !b && !c && !d && !e → a=!(b||c||d||e) etc."
+								},
+								"evaluate": {
+									"type": "boolean",
+									"default": true,
+									"description": "attempt to evaluate constant expressions"
+								},
+								"booleans": {
+									"type": "boolean",
+									"default": true,
+									"description": "various optimizations for boolean context, for example !!a ? b : c → a ? b : c"
+								},
+								"loops": {
+									"type": "boolean",
+									"default": true,
+									"description": "optimizations for do, while and for loops when we can statically determine the condition"
+								},
+								"unused": {
+									"type": "boolean",
+									"default": true,
+									"description": "drop unreferenced functions and variables"
+								},
+								"hoist_funs": {
+									"type": "boolean",
+									"default": true,
+									"description": "hoist function declarations"
+								},
+								"keep_fargs": {
+									"type": "boolean",
+									"default": true,
+									"description": "prevents the compressor from discarding unused function arguments. You need this for code which relies on `Function.length`"
+								},
+								"keep_fnames": {
+									"type": "boolean",
+									"default": false,
+									"description": "pass true to prevent the compressor from mangling/discarding function names. Useful for code relying on Function.prototype.name."
+								},
+								"hoist_vars": {
+									"type": "boolean",
+									"default": false,
+									"description": "hoist var declarations (this is false by default because it seems to increase the size of the output in general)"
+								},
+								"if_return": {
+									"type": "boolean",
+									"default": true,
+									"description": "optimizations for if/return and if/continue"
+								},
+								"join_vars": {
+									"type": "boolean",
+									"default": true,
+									"description": "join consecutive var statements"
+								},
+								"collapse_vars": {
+									"type": "boolean",
+									"default": false,
+									"description": "Collapse single-use var and const definitions when possible."
+								},
+								"reduce_vars": {
+									"type": "boolean",
+									"default": false,
+									"description": "improve optimization on variables assigned with and used as constant values."
+								},
+								"cascade": {
+									"type": "boolean",
+									"default": true,
+									"description": "small optimization for sequences, transform x, x into x and x = something(), x into x = something()"
+								},
+								"side_effects": {
+									"type": "boolean",
+									"default": true,
+									"description": "drop side-effect-free statements"
+								},
+								"pure_getters": {
+									"type": "boolean",
+									"default": false,
+									"description": "if you pass true for this, UglifyJS will assume that object property access (e.g. foo.bar or foo[\"bar\"]) doesn't have any side effects"
+								},
+								"pure_funcs": {
+									"type": ["array", "null"],
+									"default": null,
+									"description": "an array of function names that UglifyJS will assume do not produce side effects."
+								},
+								"negate_iife": {
+									"type": "boolean",
+									"default": false,
+									"description": "negate \"Immediately-Called Function Expressions\" where the return value is discarded, to avoid the parens that the code generator would insert."
+								},
+								"drop_console": {
+									"type": "boolean",
+									"default": false,
+									"description": "pass true to discard calls to console.* functions."
+								},
+								"passes": {
+									"type": "integer",
+									"default": 1,
+									"description": "number of times to run compress. Use an integer argument larger than 1 to further reduce code size in some cases. Note: raising the number of passes will increase uglify compress time."
+								},
+								"global_defs": {
+									"type": "object",
+									"default": {},
+									"description": "global definitions"
+								}
+							}
 						},
-						"dead_code": {
-							"type": "boolean",
-							"default": true,
-							"description": "remove unreachable code"
-						},
-						"drop_debugger": {
-							"type": "boolean",
-							"default": true,
-							"description": "remove debugger; statements"
-						},
-						"unsafe": {
-							"type": "boolean",
-							"default": false,
-							"description": "(default: false) -- apply \"unsafe\" transformations. See http://lisperator.net/uglifyjs/"
-						},
-						"unsafe_comps": {
-							"type": "boolean",
-							"default": false,
-							"description": "(default: false) -- Reverse < and <= to > and >= to allow improved compression."
-						},
-						"conditionals": {
-							"type": "boolean",
-							"default": true,
-							"description": "apply optimizations for if-s and conditional expressions"
-						},
-						"comparisons": {
-							"type": "boolean",
-							"default": true,
-							"description": "apply certain optimizations to binary nodes, for example: !(a <= b) → a > b (only when unsafe), attempts to negate binary nodes, e.g. a = !b && !c && !d && !e → a=!(b||c||d||e) etc."
-						},
-						"evaluate": {
-							"type": "boolean",
-							"default": true,
-							"description": "attempt to evaluate constant expressions"
-						},
-						"booleans": {
-							"type": "boolean",
-							"default": true,
-							"description": "various optimizations for boolean context, for example !!a ? b : c → a ? b : c"
-						},
-						"loops": {
-							"type": "boolean",
-							"default": true,
-							"description": "optimizations for do, while and for loops when we can statically determine the condition"
-						},
-						"unused": {
-							"type": "boolean",
-							"default": true,
-							"description": "drop unreferenced functions and variables"
-						},
-						"hoist_funs": {
-							"type": "boolean",
-							"default": true,
-							"description": "hoist function declarations"
-						},
-						"hoist_vars": {
-							"type": "boolean",
-							"default": false,
-							"description": "hoist var declarations (this is false by default because it seems to increase the size of the output in general)"
-						},
-						"if_return": {
-							"type": "boolean",
-							"default": true,
-							"description": "optimizations for if/return and if/continue"
-						},
-						"join_vars": {
-							"type": "boolean",
-							"default": true,
-							"description": "join consecutive var statements"
-						},
-						"cascade": {
-							"type": "boolean",
-							"default": true,
-							"description": "small optimization for sequences, transform x, x into x and x = something(), x into x = something()"
-						},
-						"collapse_vars": {
-							"type": "boolean",
-							"default": false,
-							"description": "(default: false) -- Collapse single-use var and const definitions when possible."
-						},
-						"warnings": {
-							"type": "boolean",
-							"default": true,
-							"description": "Display warnings when dropping unreachable code or unused declarations etc."
-						},
-						"negate_iife": {
-							"type": "boolean",
-							"default": false,
-							"description": "Negate \"Immediately-Called Function Expressions\" where the return value is discarded, to avoid the parens that the code generator would insert."
-						},
-						"pure_getters": {
-							"type": "boolean",
-							"default": false,
-							"description": "The default is false. If you pass true for this, UglifyJS will assume that object property access (e.g. foo.bar or foo[\"bar\"]) doesn't have any side effects."
-						},
-						"pure_funcs": {
-							"type": ["array", "null"],
-							"default": null,
-							"description": "An array of function names that UglifyJS will assume do not produce side effects."
-						},
-						"drop_console": {
-							"type": "boolean",
-							"default": false,
-							"description": "Pass true to discard calls to console.* functions."
-						},
-						"keep_fargs": {
-							"type": "boolean",
-							"default": true,
-							"description": "Prevents the compressor from discarding unused function arguments. You need this for code which relies on Function.length."
-						},
-						"keep_fnames": {
-							"type": "boolean",
-							"default": false,
-							"description": "Pass true to prevent the compressor from mangling/discarding function names. Useful for code relying on Function.prototype.name."
-						},
-						"passes": {
-							"type": "integer",
-							"default": 1,
-							"description": "Number of times to run compress. Use an integer argument larger than 1 to further reduce code size in some cases. Note: raising the number of passes will increase uglify compress time."
-						},
-						"global_defs": {
-							"type": "boolean",
-							"default": {},
-							"description": "Global definitions"
+						"output": {
+							"type": "object",
+							"description": "Compressor settings",
+							"properties": {
+
+								"ascii_only": {
+									"type": "boolean",
+									"default": false,
+									"description": "escape Unicode characters in strings and regexps (affects directives with non-ascii characters becoming invalid)"
+								},
+								"inline_script": {
+									"type": "boolean",
+									"default": false,
+									"description": "escape the slash in occurrences of `</script` in strings"
+								},
+								"max_line_len": {
+									"type": "integer",
+									"default": 32000,
+									"description": "maximum line length for uglified code"
+								},
+								"bracketize": {
+									"type": "boolean",
+									"default": false,
+									"description": "always insert brackets in `if`, `for`, `do`, `while` or `with` statements, even if their body is a single statement."
+								},
+								"semicolons": {
+									"type": "boolean",
+									"default": true,
+									"description": "separate statements with semicolons. If set to 'false' then whenever possible a newline will be inserted instead of a semicolon, leading to more readable output of uglified code (size before gzip could be smaller; size after gzip insignificantly larger)."
+								},
+								"comments": {
+									"type": ["boolean", "string"],
+									"default": false,
+									"description": "Preserve comments:\n  - \"all\" or `true` will keep all comments;\n  - \"some\" will keep multi-line comments containing '@license', '@preserve', or '@cc_on';\n  - A valid JS RegExp (as a string) like '/foo/i' or '/^!/' will keep matching multi-line comments."
+								},
+								"shebang": {
+									"type": "boolean",
+									"default": true,
+									"description": "preserve the shebang at the start of the file"
+								},
+								"preamble": {
+									"type": ["string", "null"],
+									"default": null,
+									"description": "Preamble to prepend to the output. You can use this to insert a comment, for example for licensing information."
+								},
+								"quote_style": {
+									"type": "string",
+									"enum": ["best", "single", "double", "original"],
+									"default": "best",
+									"description": "quite style to use, by default double quotes are used unless the string contains double quotes"
+								}
+							}
 						}
 					}
 				},
 				"minify.css": {
 					"type": "object",
 					"description": "Settings specific to CSS minification. Tool tips and completion are provided when editing your settings.",
+					"default": {
+						"advanced": true,
+						"aggressiveMerging": true,
+						"compatibility": "*",
+						"inliner": {},
+						"keepBreaks": false,
+						"keepSpecialComments": "*",
+						"mediaMerging": true,
+						"processImport": true,
+						"processImportFrom": ["all"],
+						"rebase": true,
+						"restructuring": true,
+						"root": "${workspaceRoot}",
+						"roundingPrecision": 2,
+						"semanticMerging": false,
+						"shorthandCompacting": true
+					},
 					"properties": {
 						"advanced": {
 							"type": "boolean",
@@ -259,6 +389,44 @@
 				"minify.html": {
 					"type": "object",
 					"description": "Settings specific to HTML minification. Tool tips and completion are provided when editing your settings.",
+					"default": {
+						"caseSensitive": false,
+						"collapseBooleanAttributes": true,
+						"collapseInlineTagWhitespace": false,
+						"collapseWhitespace": true,
+						"conservativeCollapse": false,
+						"customAttrAssign": [],
+						"customAttrCollapse": "",
+						"customAttrSurround": [],
+						"customEventAttributes": ["^on[a-z]{3,}$"],
+						"decodeEntities": false,
+						"html5": true,
+						"ignoreCustomComments": ["^!"],
+						"ignoreCustomFragments": ["<%[\\s\\S]*?%>", "<\\?[\\s\\S]*?\\?>"],
+						"includeAutoGeneratedTags": true,
+						"keepClosingSlash": false,
+						"maxLineLength": false,
+						"minifyCSS": true,
+						"minifyJS": true,
+						"minifyURLs": false,
+						"preserveLineBreaks": false,
+						"preventAttributesEscaping": false,
+						"processConditionalComments": false,
+						"processScripts": [],
+						"quoteCharacter": "\"",
+						"removeAttributeQuotes": false,
+						"removeComments": false,
+						"removeEmptyAttributes": false,
+						"removeEmptyElements": false,
+						"removeOptionalTags": false,
+						"removeRedundantAttributes": false,
+						"removeScriptTypeAttributes": false,
+						"removeStyleLinkTypeAttributes": false,
+						"sortAttributes": false,
+						"sortClassName": false,
+						"trimCustomFragments": false,
+						"useShortDoctype": false
+					},
 					"properties": {
 						"caseSensitive": {
 							"type": "boolean",

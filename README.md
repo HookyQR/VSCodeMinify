@@ -3,9 +3,9 @@
 [![Build Status](https://api.travis-ci.org/HookyQR/VSCodeMinify.svg?branch=master)](https://travis-ci.org/HookyQR/VSCodeMinify)
 
 Minify your js, css and html files to save transmit bandwidth. Calls each of the minifiers directly, allowing settings to be passed:
-* **JS:** [uglify-js](http://lisperator.net/uglifyjs) v2.7.3
-* **CSS:** [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.19
-* **HTML:** [html-minifier](http://kangax.github.io/html-minifier/) v3.0.3
+* **JS:** [uglify-js](http://lisperator.net/uglifyjs) v2.7.4
+* **CSS:** [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.21
+* **HTML:** [html-minifier](http://kangax.github.io/html-minifier/) v3.2.2
 
 Run the file minifier with **F1** `Minify`.
 
@@ -17,33 +17,48 @@ Optionally runs minify on save when a matching minified file (and/or directory) 
 "minify.minifyExistingOnSave": false,
 
 "minify.js": {
-	"sequences": true,
-	"properties": true,
-	"dead_code": true,
-	"drop_debugger": true,
-	"unsafe": false,
-	"unsafe_comps": false,
-	"conditionals": true,
-	"comparisons": true,
-	"evaluate": true,
-	"booleans": true,
-	"loops": true,
-	"unused": true,
-	"hoist_funs": true,
-	"hoist_vars": false,
-	"if_return": true,
-	"join_vars": true,
-	"cascade": true,
-	"collapse_vars": false,
-	"warnings": true,
-	"negate_iife": false,
-	"pure_getters": false,
-	"pure_funcs": null,
-	"drop_console": false,
-	"keep_fargs": true,
-	"keep_fnames": false,
-	"passes": 1,
-	"global_defs": {}
+	"mangle": true,
+	"compress": {
+		"sequences": true,
+		"properties": true,
+		"dead_code": true,
+		"drop_debugger": true,
+		"unsafe": false,
+		"unsafe_comps": false,
+		"conditionals": true,
+		"comparisons": true,
+		"evaluate": true,
+		"booleans": true,
+		"loops": true,
+		"unused": true,
+		"hoist_funs": true,
+		"keep_fargs": true,
+		"keep_fnames": false,
+		"hoist_vars": false,
+		"if_return": true,
+		"join_vars": true,
+		"collapse_vars": false,
+		"reduce_vars": false,
+		"cascade": true,
+		"side_effects": true,
+		"pure_getters": false,
+		"pure_funcs": null,
+		"negate_iife": false,
+		"drop_console": false,
+		"passes": 1,
+		"global_defs": {}
+	},
+	"output": {
+		"ascii_only": false,
+		"inline_script": false,
+		"max_line_len": 32000,
+		"bracketize": false,
+		"semicolons": true,
+		"comments": false,
+		"shebang": true,
+		"preamble": null,
+		"quote_style": "best"
+	}
 },
 "minify.css": {
 	"advanced": true,
@@ -105,41 +120,3 @@ Optionally runs minify on save when a matching minified file (and/or directory) 
 Since `html-minifier` also uses `clean-css` and `uglify-js`, setting `minifyJS` or `minifyCSS` to **`true`** will embed the settings you have supplied for those minifiers automatically. You can provide your own settings as an object if you want some different methods to be used.
 
 Like [beautify for VS Code](https://marketplace.visualstudio.com/items/HookyQR.beautify), minify accepts an array for file extension that you will accept minification of under `minify.JSfiles`, `minify.CSSfiles`, and `minify.HTMLfiles`.
-
-## Changes:
-### 0.2.5: 14 Oct 2016
-* Update dependencies.
-  * [uglify-js](http://lisperator.net/uglifyjs) v2.7.3
-  * [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.20
-  * [html-minifier](http://kangax.github.io/html-minifier/) v3.1.0
-
-### 0.2.4: 18 Sep 2016
-* Update dependencies.
-  * [uglify-js](http://lisperator.net/uglifyjs) v2.7.3
-  * [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.19
-  * [html-minifier](http://kangax.github.io/html-minifier/) v3.0.3
-
-### 0.2.3: 12 Aug 2016
-* force ignoreCustomFragments existance so html-minifier works.
-
-### 0.2.2: 12 Aug 2016
-* Fix dependencies tree failure.
-
-### 0.2.1: 06 Aug 2016
-* Update embeded dependencies (clean-css & html-minifier).
-
-### 0.2.0: 13 Feb 2016
-* Update embeded dependencies (clean-css & html-minifier).
-
-### 0.0.3 >> 0.1.1:
-* Fixed use of and enforcement of defaults.
-* Now includes the inner components of minify directly.
-* Allow preferences for all three minifiers.
-* Allow minifiying whole directories for css and js.
-
-### 0.0.1 >> 0.0.3: 24 Dec 2015
-* Removed suborinate module tests from package output
-* Added icon
-* Remove `json` from valid types.
-* Indicate fail on empty file.
-* Change report line to percentage.

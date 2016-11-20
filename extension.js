@@ -5,29 +5,49 @@ const mincss = require('clean-css');
 const minhtml = require('html-minifier');
 const fs = require('fs');
 const path = require('path');
-const defaults = require('./defaults');
 
-//need to register the onSave function here
-
-//register on activation
+const quotedStyles = ["best", "single", "double", "original"]
+	//register on activation
 function activate(context) {
 	let cleanSettings = function(opts) {
-		opts = defaults(opts);
+		if (opts.js && opts.js.output && opts.js.output.quote_style) {
+			opts.js.output.quote_style = quotedStyles.indexOf(opts.js.output.quote_style);
+			if (opts.js.output.quote_style < 0) opts.js.output.quote_style = 0;
+		}
+		if (opts.js) {
+			delete opts.js.spidermonkey;
+			delete opts.js.outSourceMap;
+			delete opts.js.inSourceMap;
+			delete opts.js.sourceMapUrl;
+			delete opts.js.sourceMapInline;
+			delete opts.js.fromString;
+			delete opts.js.warnings;
+			delete opts.js.mangleProperties;
+			delete opts.js.nameCache;
+			delete opts.js.parse;
+			if (opts.js.output) {
+				delete opts.js.output.beatify;
+				delete opts.js.output.source_map;
+			}
+			if (opts.js.compress) {
+				delete opts.js.compress.warnings;
+			}
+		}
 		//drop these settings:
 		if (opts.css) {
 			delete opts.css.sourceMap;
 			delete opts.css.sourceMapInlineSources;
-			delete opts.debug;
-			delete opts.benchmark;
+			delete opts.css.benchmark;
+			delete opts.css.debug;
 		}
 		//switch settings for html:
 		if (opts.css && opts.html && opts.html.minifyCSS === true) opts.html.minifyCSS = opts.css;
 		if (opts.js && opts.html && opts.html.minifyJS === true) opts.html.minifyJS = opts.js;
 		return opts;
 	};
-	let settings = cleanSettings(vscode.workspace.getConfiguration("minify"));
+	let settings = cleanSettings(vscode.workspace.getConfiguration()
+		.get("minify"));
 	let sendFileOut = function(fileName, data, stats) {
-
 		fs.writeFile(fileName, data, "utf8", () => {
 			let status = "Minified: " + stats.files + " files";
 			if (stats.length) status = "Minified: " + (((data.length / stats.length) * 10000) | 0) / 100 +
@@ -51,7 +71,7 @@ function activate(context) {
 		const isCSS = ext.toLocaleLowerCase() === 'css';
 		const isHTML = ext.toLocaleLowerCase() === 'html' || ext.toLocaleLowerCase() === 'htm';
 		if (isJS) {
-			let opts = settings.js || {};
+			let opts = settings.js;
 			opts.fromString = true;
 			try {
 				let results = minjs.minify(data, opts);
@@ -98,7 +118,6 @@ function activate(context) {
 					settings.html.customAttrCollapse = new RegExp(settings.html.customAttrCollapse.replace(/^\/(.*)\/$/, '$1'));
 				results = minhtml.minify(data, settings.html);
 			} catch (e) {
-				console.log(e, settings.html);
 				return vscode.window.setStatusBarMessage("Minify failed. (exception)", 5000);
 			}
 			if (t) settings.html.minifyCSS.root = t;
@@ -121,7 +140,7 @@ function activate(context) {
 				5000);
 			let outName = folder + ".min." + ext;
 			if (ext === 'js') {
-				let opts = settings.js || {};
+				let opts = settings.js;
 				opts.fromString = false;
 				try {
 					let results = minjs.minify(files, opts);
@@ -176,7 +195,8 @@ function activate(context) {
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.workspace.onDidChangeConfiguration(() => {
-		settings = cleanSettings(vscode.workspace.getConfiguration("minify"));
+		settings = cleanSettings(vscode.workspace.getConfiguration()
+			.get("minify"));
 	});
 	context.subscriptions.push(disposable);
 
