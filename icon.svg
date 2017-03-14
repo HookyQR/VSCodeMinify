@@ -5,7 +5,7 @@
 		<circle id="inner" cx="64" cy="64" r="58"></circle>
 		<circle id="outer" cx="64" cy="64" r="64"></circle>
 		<path id="shadow" d="M 102,38 l 24,32 L 114,126 l-48,-64 M 63,66 l48,64 L 75,155 l-48,-64"></path>
-		<path id="arrow" d="M0,0 L-8,8 -8,3 -16,3 -16,-3 -8,-3 -8,-8 z" fill="white" stroke="#0027FF" stroke-width="2" stroke-linejoin="round">
+		<path id="arrow" d="M0,0 L-8,8 -8,3 -16,3 -16,-3 -8,-3 -8,-8 z" fill="white" stroke="#0027FF" stroke-width="2" stroke-linejoin="round"/>
 	</defs>
 	<clipPath id="clipCenter">
 		<circle r="10" cx="-4" cy="-4" />
