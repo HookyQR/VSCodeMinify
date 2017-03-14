@@ -24,7 +24,7 @@
 	<use xlink:href="#inner" fill="#e8e030" />
 	<use xlink:href="#shadow" fill="#E5C230" clip-path="url(#clipInner)" />
 	<use xlink:href="#shadow" fill="blue" mask="url(#maskOutline)" />
-	<g transform=" translate(64 64) rotate(-45)">
+	<g transform="translate(64 64) rotate(-45)">
 		<use xlink:href="#arrow" transform="scale(2.4) translate(-2 0)" />
 		<use xlink:href="#arrow" transform="scale(2.4) translate(2 0) rotate(180)" />
 	</g>
