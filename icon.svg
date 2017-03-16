@@ -10,9 +10,6 @@
 	<clipPath id="clipInner">
 		<use xlink:href="#inner" />
 	</clipPath>
-	<clipPath id="clipOuter">
-		<use xlink:href="#outer" />
-	</clipPath>
 	<mask id="maskOutline">
 		<use xlink:href="#outer" fill="white" />
 		<use xlink:href="#inner" fill="black" />
