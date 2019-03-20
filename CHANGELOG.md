@@ -1,3 +1,7 @@
+### 0.4.0: 20 Mar 2019
+* Switch to [terser](https://github.com/terser-js/terser) to support ES6
+* Minor bug fixes
+
 ### 0.3.0: 20 Nov 2016
 * Update dependencies
   * [uglify-js](http://lisperator.net/uglifyjs) v2.7.4
@@ -6,7 +10,6 @@
 * Correct handling of min.js settings. This includes passing them to html-minifier correctly.
 * Fix default settings.
 * Add change log.
-
 
 ### 0.1.1 >> 0.2.5: 14 Oct 2016
 * Update dependencies.
