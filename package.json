@@ -13,7 +13,7 @@
 	"activationEvents": [
 		"*"
 	],
-	"icon": "icon.svg",
+	"icon": "icon.png",
 	"galleryBanner": {
 		"color": "#e8e030",
 		"theme": "light"
