@@ -7,9 +7,9 @@ const fs = require('fs');
 const path = require('path');
 
 const quotedStyles = ["best", "single", "double", "original"]
-	//register on activation
+//register on activation
 function activate(context) {
-	let cleanSettings = function(opts) {
+	let cleanSettings = function (opts) {
 		if (opts.js && opts.js.output && opts.js.output.quote_style) {
 			opts.js.output.quote_style = quotedStyles.indexOf(opts.js.output.quote_style);
 			if (opts.js.output.quote_style < 0) opts.js.output.quote_style = 0;
@@ -47,7 +47,7 @@ function activate(context) {
 	};
 	let settings = cleanSettings(vscode.workspace.getConfiguration()
 		.get("minify"));
-	let sendFileOut = function(fileName, data, stats) {
+	let sendFileOut = function (fileName, data, stats) {
 		fs.writeFile(fileName, data, "utf8", () => {
 			let status = "Minified: " + stats.files + " files";
 			if (stats.length) status = "Minified: " + (((data.length / stats.length) * 10000) | 0) / 100 +
@@ -55,7 +55,7 @@ function activate(context) {
 			vscode.window.setStatusBarMessage(status, 5000);
 		});
 	};
-	let doMinify = function(document) {
+	let doMinify = function (document) {
 		let outName = document.fileName.split('.');
 		const ext = outName.pop();
 		outName.push("min");
@@ -127,7 +127,7 @@ function activate(context) {
 		}
 		//otherwise, we don't care ...
 	};
-	let doMinifyDir = function(folder, ext) {
+	let doMinifyDir = function (folder, ext) {
 		fs.readdir(folder, (err, files) => {
 			//keep just our extension, drop all pre min'ed
 			files = files.sort()
@@ -135,7 +135,7 @@ function activate(context) {
 					.slice(1) === ext)
 				.filter(f => !f.endsWith(".min." + ext))
 				.map(f => path.join(folder, f));
-			if (files.length === 0) return vscode.window.setStatusBarMessage("No files for directory minify (", ext, ")",
+			if (files.length === 0) return vscode.window.setStatusBarMessage(`No files for directory minify (${ext})`,
 				5000);
 			let outName = folder + ".min." + ext;
 			if (ext === 'js') {
@@ -170,7 +170,7 @@ function activate(context) {
 			}
 		});
 	};
-	let disposable = vscode.commands.registerCommand('HookyQR.minify', function() {
+	let disposable = vscode.commands.registerCommand('HookyQR.minify', function () {
 		const active = vscode.window.activeTextEditor;
 		if (!active || !active.document) return;
 		if (active.document.isUntitled) return vscode.window.setStatusBarMessage(
@@ -179,7 +179,7 @@ function activate(context) {
 		return doMinify(active.document);
 	});
 	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand('HookyQR.minifyDir', function() {
+	disposable = vscode.commands.registerCommand('HookyQR.minifyDir', function () {
 		const active = vscode.window.activeTextEditor;
 		if (!active || !active.document) return;
 		if (active.document.isUntitled) return vscode.window.setStatusBarMessage(
@@ -200,7 +200,7 @@ function activate(context) {
 	});
 	context.subscriptions.push(disposable);
 
-	disposable = vscode.workspace.onDidSaveTextDocument(function(doc) {
+	disposable = vscode.workspace.onDidSaveTextDocument(function (doc) {
 		//check if the user wants to do a minify here
 		if (!vscode.workspace.getConfiguration('minify')
 			.minifyExistingOnSave) return;
