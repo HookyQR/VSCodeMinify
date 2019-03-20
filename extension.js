@@ -1,6 +1,6 @@
 "use strict";
 const vscode = require('vscode');
-const minjs = require('uglify-js');
+const minjs = require('terser');
 const mincss = require('clean-css');
 const minhtml = require('html-minifier');
 const fs = require('fs');
@@ -72,7 +72,6 @@ function activate(context) {
 		const isHTML = ext.toLocaleLowerCase() === 'html' || ext.toLocaleLowerCase() === 'htm';
 		if (isJS) {
 			let opts = settings.js;
-			opts.fromString = true;
 			try {
 				let results = minjs.minify(data, opts);
 				sendFileOut(outName, results.code, {

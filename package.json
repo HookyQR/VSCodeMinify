@@ -59,7 +59,6 @@
 							"join_vars": true,
 							"collapse_vars": false,
 							"reduce_vars": false,
-							"cascade": true,
 							"side_effects": true,
 							"pure_getters": false,
 							"pure_funcs": null,
@@ -72,7 +71,7 @@
 							"ascii_only": false,
 							"inline_script": false,
 							"max_line_len": 32000,
-							"bracketize": false,
+							"braces": false,
 							"semicolons": true,
 							"comments": false,
 							"shebang": true,
@@ -615,11 +614,11 @@
 		}
 	},
 	"devDependencies": {
-		"vscode": "0.10.6"
+		"vscode": "~1.1.30"
 	},
 	"license": "MIT",
 	"dependencies": {
-		"uglify-js": ">=2.7.0",
+		"terser": "^3.17.0",
 		"clean-css": ">=3.4.19",
 		"html-minifier": ">=3.0.2"
 	},
