@@ -140,15 +140,16 @@ function activate(context) {
 			let outName = folder + ".min." + ext;
 			if (ext === 'js') {
 				let opts = settings.js;
-				opts.fromString = false;
-				try {
-					let results = minjs.minify(files, opts);
+				Promise.all(files.map(
+					file => new Promise(res => fs.readFile(file, 'utf8', (e, data) => {
+						res(data || "");
+					})))).then(data => {
+					let results = minjs.minify(data, opts);
+					if ( results.error) { throw results.error; }
 					sendFileOut(outName, results.code, {
 						files: files.length
 					});
-				} catch (e) {
-					vscode.window.setStatusBarMessage("Minify failed: " + e.message, 5000);
-				}
+				}).catch(e => vscode.window.setStatusBarMessage("Minify failed with error: " + e.message, 5000));
 			} else {
 				let base = settings.css.root.slice();
 				settings.css.root = settings.css.root.replace("${workspaceRoot}", vscode.workspace.rootPath || "");
