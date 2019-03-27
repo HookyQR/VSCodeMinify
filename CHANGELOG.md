@@ -1,4 +1,7 @@
-### 0.4.1: 20 Mar 2019
+### 0.4.3: 28 Mar 2019
+* Remove hardcoded test in production code (Thanks @pnolin)
+
+### 0.4.2: 27 Mar 2019
 * Fix translation and removal of `bracketize` option
 
 ### 0.4.1: 20 Mar 2019
