@@ -81,7 +81,6 @@ function activate(context) {
 		if (isJS) {
 			let opts = settings.js;
 			try {
-				opts.bracketize = true;
 				let results = minjs.minify(data, opts);
 				if(results.error) {
 					throw results.error;
