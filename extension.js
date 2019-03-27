@@ -28,17 +28,17 @@ function activate(context) {
 			if (opts.js.output) {
 				delete opts.js.output.beatify;
 				delete opts.js.output.source_map;
+				// options changed with move to terser
+				if ('bracketize' in opts.js.output) {
+					if (!('braces' in opts.js.output)) {
+						opts.js.output.braces = opts.js.output.bracketize;
+					}
+					delete opts.js.output.bracketize;
+				}
 			}
 			if (opts.js.compress) {
 				delete opts.js.compress.warnings;
 				delete opts.js.compress.cascade; // option removed with move to terser
-			}
-			// options changed with move to terser
-			if ('bracktize' in opts.js.output) {
-				if (!('braces' in opts.js.output)) {
-					opts.js.output.braces = opts.js.output.bracktize;
-				}
-				delete opts.js.output.bracktize;
 			}
 		}
 		//drop these settings:
@@ -81,7 +81,11 @@ function activate(context) {
 		if (isJS) {
 			let opts = settings.js;
 			try {
+				opts.bracketize = true;
 				let results = minjs.minify(data, opts);
+				if(results.error) {
+					throw results.error;
+				}
 				sendFileOut(outName, results.code, {
 					length: data.length
 				});

@@ -1,3 +1,9 @@
+### 0.4.1: 20 Mar 2019
+* Fix translation and removal of `bracketize` option
+
+### 0.4.1: 20 Mar 2019
+* Remove unsupported options for terser
+
 ### 0.4.0: 20 Mar 2019
 * Switch to [terser](https://github.com/terser-js/terser) to support ES6
 * Minor bug fixes
