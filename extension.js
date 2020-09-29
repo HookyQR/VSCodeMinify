@@ -68,16 +68,60 @@ function activate(context) {
 		const ext = outName.pop();
 		outName.push("min");
 		outName.push(ext);
+
+		//what are we minifying?
+		const isJS = ext.toLocaleLowerCase() === 'js';
+		const isCSS = ext.toLocaleLowerCase() === 'css';
+		const isHTML = ext.toLocaleLowerCase() === 'html' || ext.toLocaleLowerCase() === 'htm';
+
+		//get the setting based on what type of minification this is
+		if (isJS && typeof settings.jsSavePath !== typeof undefined) {
+			var savepath = settings.jsSavePath;
+		} else if (isCSS && typeof settings.cssSavePath !== typeof undefined) {
+			var savepath = settings.cssSavePath;
+		} else if (isHTML && typeof settings.htmlSavePath !== typeof undefined) {
+			var savepath = settings.htmlSavePath;
+		}
+
+		//check if the save path is set, otherwise we don't need to do any of this
+		if (typeof savepath !== typeof undefined) {
+			//let's break down the file path and setting into arrays, to better handle them
+			let st = outName[0].split("\\");
+			let output_filename = st.pop();
+			let arr = savepath.split("/");
+
+			//remove empty elements from arrays
+			st = st.filter((entry) => { return entry.trim() != '' });
+			arr = arr.filter((entry) => { return entry.trim() != '' });
+
+			//is the first character of the save path a slash?
+			if (savepath.substring(0, 1) == '/') {
+				//this is a workspace path starting at the root of the workspace, then
+				outName[0] = vscode.workspace.rootPath.split('\\');
+				outName[0] = outName[0].concat(arr, output_filename).join('\\');
+			} else {
+				//is the first element '..'?
+				if (arr[0] == '..') {
+					//this is a relative path
+					for (let i = 0; i < arr.length; i++) {
+						if (arr[i] == ".") continue;
+						if (arr[i] == "..") st.pop();
+						else st.push(arr[i]);
+					}
+					outName[0] = st.concat(output_filename).join('\\');
+				} else {
+					//this is a nested path
+					outName[0] = st.concat(arr, output_filename).join('\\');
+				}
+			}
+		}
+
 		outName = outName.join('.');
 		let data = document.getText();
 		//if the document is empty here, we output an empty file to the min point
 		if (!data.length) return sendFileOut(outName, "", {
 			length: 1
 		});
-		//what are we minifying?
-		const isJS = ext.toLocaleLowerCase() === 'js';
-		const isCSS = ext.toLocaleLowerCase() === 'css';
-		const isHTML = ext.toLocaleLowerCase() === 'html' || ext.toLocaleLowerCase() === 'htm';
 		if (isJS) {
 			let opts = settings.js;
 			try {
