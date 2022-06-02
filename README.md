@@ -11,7 +11,7 @@ Run the file minifier with **F1** `Minify`.
 
 Folders containing Javascript and CSS file can be minified to a single file (to `{dirname}.min.[css|js]`) with **F1** `Minify Directory`. It is acceptable to have a single directory minified for both Javascript and CSS.
 
-Optionally runs minify on save when a matching minified file (and/or directory) already exists. Enalbe in your user or workspace settings. The setting defaults are shown below:
+Optionally runs minify on save when a matching minified file (and/or directory) already exists. Enable in your user or workspace settings. The setting defaults are shown below:
 
 ```json
 "minify.minifyExistingOnSave": false,
@@ -114,7 +114,7 @@ Optionally runs minify on save when a matching minified file (and/or directory) 
 }
 ```
 
-`minifiy.css.root` accepts "`${workspaceRoot}`/some/path" to define the internal `@import` absolute root.
+`minify.css.root` accepts "`${workspaceRoot}`/some/path" to define the internal `@import` absolute root.
 
 Since `html-minifier` also uses `clean-css` and `uglify-js`, setting `minifyJS` or `minifyCSS` to **`true`** will embed the settings you have supplied for those minifiers automatically. You can provide your own settings as an object if you want some different methods to be used.
 
