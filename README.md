@@ -3,7 +3,7 @@
 [![Build Status](https://api.travis-ci.org/HookyQR/VSCodeMinify.svg?branch=master)](https://travis-ci.org/HookyQR/VSCodeMinify)
 
 Minify your js, css and html files to save transmit bandwidth. Calls each of the minifiers directly, allowing settings to be passed:
-* **JS:** [uglify-js](http://lisperator.net/uglifyjs) v2.7.4
+* **JS:** [terser](https://terser.org) v3.17.0
 * **CSS:** [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.21
 * **HTML:** [html-minifier](http://kangax.github.io/html-minifier/) v3.2.2
 
@@ -116,6 +116,6 @@ Optionally runs minify on save when a matching minified file (and/or directory) 
 
 `minifiy.css.root` accepts "`${workspaceRoot}`/some/path" to define the internal `@import` absolute root.
 
-Since `html-minifier` also uses `clean-css` and `uglify-js`, setting `minifyJS` or `minifyCSS` to **`true`** will embed the settings you have supplied for those minifiers automatically. You can provide your own settings as an object if you want some different methods to be used.
+Since `html-minifier` also uses `clean-css` and `terser`, setting `minifyJS` or `minifyCSS` to **`true`** will embed the settings you have supplied for those minifiers automatically. You can provide your own settings as an object if you want some different methods to be used.
 
 Like [beautify for VS Code](https://marketplace.visualstudio.com/items/HookyQR.beautify), minify accepts an array for file extension that you will accept minification of under `minify.JSfiles`, `minify.CSSfiles`, and `minify.HTMLfiles`.
