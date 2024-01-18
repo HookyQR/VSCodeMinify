@@ -2,7 +2,7 @@
 	"name": "minify",
 	"displayName": "Minify",
 	"description": "Minify for VS Code.\nMinify with command, and (optionally) re-minify on save.",
-	"version": "0.6.1-dev3",
+	"version": "0.6.1-dev4",
 	"publisher": "Maingron",
 	"engines": {
 		"vscode": "^1.6.0"
