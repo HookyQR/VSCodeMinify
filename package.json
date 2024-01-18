@@ -2,7 +2,7 @@
 	"name": "minify",
 	"displayName": "Minify",
 	"description": "Minify for VS Code.\nMinify with command, and (optionally) re-minify on save.",
-	"version": "0.6.1-dev",
+	"version": "0.6.1-dev3",
 	"publisher": "Maingron",
 	"engines": {
 		"vscode": "^1.6.0"
@@ -671,7 +671,7 @@
 	"dependencies": {
 		"terser": "^5.27.0",
 		"clean-css": ">=3.4.19",
-		"html-minifier": ">=3.0.2"
+		"html-minifier": ">=3.0.3"
 	},
 	"repository": {
 		"type": "git",
