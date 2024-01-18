@@ -2,10 +2,10 @@
 	"name": "minify",
 	"displayName": "Minify",
 	"description": "Minify for VS Code.\nMinify with command, and (optionally) re-minify on save.",
-	"version": "0.4.3",
-	"publisher": "HookyQR",
+	"version": "0.7.0",
+	"publisher": "Maingron",
 	"engines": {
-		"vscode": "^1.6.0"
+		"vscode": "^1.85.0"
 	},
 	"categories": [
 		"Other"
@@ -665,13 +665,13 @@
 		}
 	},
 	"devDependencies": {
-		"vscode": "~1.1.30"
+		"vscode": "~1.1.37"
 	},
 	"license": "MIT",
 	"dependencies": {
-		"terser": "^3.17.0",
+		"terser": "^5.27.0",
 		"clean-css": ">=3.4.19",
-		"html-minifier": ">=3.0.2"
+		"html-minifier": ">=3.0.3"
 	},
 	"repository": {
 		"type": "git",

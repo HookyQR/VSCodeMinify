@@ -1,6 +1,6 @@
 "use strict";
 const vscode = require('vscode');
-const minjs = require('terser');
+const { minify } = require('terser');
 const mincss = require('clean-css');
 const minhtml = require('html-minifier');
 const fs = require('fs');
@@ -63,7 +63,7 @@ function activate(context) {
 			vscode.window.setStatusBarMessage(status, 5000);
 		});
 	};
-	let doMinify = function (document) {
+	let doMinify = async function (document) {
 		let outName = document.fileName.split('.');
 		const ext = outName.pop();
 		outName.push("min");
@@ -81,8 +81,8 @@ function activate(context) {
 		if (isJS) {
 			let opts = settings.js;
 			try {
-				let results = minjs.minify(data, opts);
-				if(results.error) {
+				let results = await minify(data, opts);
+				if (results.error) {
 					throw results.error;
 				}
 				sendFileOut(outName, results.code, {
@@ -118,12 +118,12 @@ function activate(context) {
 			try {
 				settings.html.ignoreCustomFragments = settings.html.ignoreCustomFragments || [];
 				['customAttrAssign', 'customAttrSurround', 'customEventAttributes', 'ignoreCustomComments', 'ignoreCustomFragments']
-				.forEach(n => {
-					let e = settings.html[n];
-					if (Array.isArray(e)) {
-						settings.html[n] = e.map(ee => (typeof ee === 'string') ? new RegExp(ee.replace(/^\/(.*)\/$/, '$1')) : ee);
-					}
-				});
+					.forEach(n => {
+						let e = settings.html[n];
+						if (Array.isArray(e)) {
+							settings.html[n] = e.map(ee => (typeof ee === 'string') ? new RegExp(ee.replace(/^\/(.*)\/$/, '$1')) : ee);
+						}
+					});
 				if (typeof settings.html.customAttrCollapse === 'string')
 					settings.html.customAttrCollapse = new RegExp(settings.html.customAttrCollapse.replace(/^\/(.*)\/$/, '$1'));
 				results = minhtml.minify(data, settings.html);
@@ -155,8 +155,10 @@ function activate(context) {
 					file => new Promise(res => fs.readFile(file, 'utf8', (e, data) => {
 						res(data || "");
 					})))).then(data => {
-					let results = minjs.minify(data, opts);
-					if ( results.error) { throw results.error; }
+					let results = minify(data, opts);
+					if (results.error) {
+						throw results.error;
+					}
 					sendFileOut(outName, results.code, {
 						files: files.length
 					});
