@@ -7,6 +7,8 @@ Minify your js, css and html files to save transmit bandwidth. Calls each of the
 * **CSS:** [clean-css](https://github.com/jakubpawlowicz/clean-css) v3.4.21
 * **HTML:** [html-minifier](http://kangax.github.io/html-minifier/) v3.2.2
 
+(Listed versions are probably wrong)
+
 Run the file minifier with **F1** `Minify`.
 
 Folders containing Javascript and CSS file can be minified to a single file (to `{dirname}.min.[css|js]`) with **F1** `Minify Directory`. It is acceptable to have a single directory minified for both Javascript and CSS.
